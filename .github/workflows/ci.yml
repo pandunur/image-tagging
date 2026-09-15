@@ -21,7 +21,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t user-service:${{ github-sha }} .
+            -t user-service:${{ github.sha }} .
      
       - name: show docker image
         run: docker images user-service 
