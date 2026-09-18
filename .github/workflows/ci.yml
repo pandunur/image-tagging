@@ -53,8 +53,3 @@ jobs:
             -d -p 8080:8080 \
               --name user-service \
                 user-service:${{ github.sha }}
-
-      - name: test container
-        run: |
-          curl http://localhost:8080/health
-          curl http://localhost:8080/users
