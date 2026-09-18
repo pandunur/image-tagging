@@ -50,9 +50,11 @@ jobs:
       - name: run docker container
         run: |
           docker run \
-            -d -p 80:8080 \
+            -d -p 8080:8080 \
               --name user-service \
                 user-service:${{ github.sha }}
 
       - name: test container
-        run: curl http://localhost:80/users
+        run: |
+          curl http://localhost:8080/health
+          curl http://localhost:8080/users
