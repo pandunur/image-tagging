@@ -55,4 +55,4 @@ jobs:
                 user-service:${{ github.sha }}
 
       - name: test container
-        run: curl http://localhost:80/health
+        run: curl http://localhost:80/users
