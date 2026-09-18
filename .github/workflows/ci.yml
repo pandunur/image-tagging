@@ -10,7 +10,53 @@ on:
       - main
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps: 
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      
+      - name: install dependencies
+        run: python -m pip install -r requirements.txt
+      
+      - name: run unit test
+        run: python -m pytest test/test_app.py
+
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run integration tests
+        run: python -m pytest test/test_integration.py
+
   docker:
+    needs:
+      - unit-test
+      - integration-test
+
     name: Docker Build
     runs-on: ubuntu-latest
 
@@ -24,4 +70,14 @@ jobs:
             -t user-service:${{ github.sha }} .
      
       - name: show docker image
-        run: docker images user-service 
+        run: docker images user-service
+
+      - name: run docker container
+        run: |
+          docker run \
+            -d -p 8080:8080 \
+              --name user-service \
+                user-service:${{ github.sha }}
+
+      - name: test container
+        run: curl http://localhost:8080/health
