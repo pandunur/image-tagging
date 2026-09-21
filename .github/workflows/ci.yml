@@ -64,7 +64,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: arn:aws:iam::267544548136:role/ecs-microservices-github-actions
+          role-to-assume: arn:aws:iam::267544548136:role/github-actions-ecr
           aws-region: ap-southeast-3
 
       - name: Verify AWS identity
