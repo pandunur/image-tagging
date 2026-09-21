@@ -42,14 +42,51 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t user-service:${{ github.sha }} .
+            -t my-repo:${{ github.sha }} .
      
       - name: show docker image
-        run: docker images user-service
+        run: docker images my-repo
 
       - name: run docker container
         run: |
           docker run \
             -d -p 8080:8080 \
-              --name user-service \
-                user-service:${{ github.sha }}
+              --name my-repo \
+                my-repo:${{ github.sha }}
+  
+  docker-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::267544548136:role/ecs-microservices-github-actions
+          aws-region: ap-southeast-3
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ap-southeast-3 | \
+            docker login \
+              --username AWS \
+              --password-stdin 267544548136.dkr.ecr.ap-southeast-3.amazonaws.com
+
+      - name: Build Docker image
+        run: docker build -t my-repo:${{ github.sha }} .
+
+      - name: Tag Docker image
+        run: |
+          docker tag \
+            my-repo:latest \
+            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/my-repo:${{ github.sha }}
+
+      - name: Push Docker image
+        run: |
+          docker push \
+            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/my-repo:${{ github.sha }}
