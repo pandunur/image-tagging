@@ -16,7 +16,7 @@ permissions:
 env:
   AWS_REGION: ap-southeast-3
   AWS_ACCOUNT_ID: "267544548136"
-  ECS_CLUSTER: aws-ms-cluster
+  ECS_CLUSTER: aws-ms-dev-cluster
   ECS_SERVICE: aws-ms-user-service
   ECR_REPOSITORY: aws-ms-dev-user-service
   CONTAINER_NAME: user-service
