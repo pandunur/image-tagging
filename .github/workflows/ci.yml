@@ -83,15 +83,15 @@ jobs:
               --password-stdin 267544548136.dkr.ecr.ap-southeast-3.amazonaws.com
 
       - name: Build Docker image
-        run: docker build -t user-service:${{ github.sha }} .
+        run: docker build -t aws-ms-dev-user-service:${{ github.sha }} .
 
       - name: Tag Docker image
         run: |
           docker tag \
-            user-service:${{ github.sha }} \
-            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/user-service:${{ github.sha }}
+            aws-ms-dev-user-service:${{ github.sha }} \
+            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/aws-ms-dev-user-service:${{ github.sha }}
 
       - name: Push Docker image
         run: |
           docker push \
-            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/user-service:${{ github.sha }}
+            267544548136.dkr.ecr.ap-southeast-3.amazonaws.com/aws-ms-dev-user-service:${{ github.sha }}
