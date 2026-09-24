@@ -1,7 +1,11 @@
 name: CD
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
     branches:
       - main
 
@@ -11,6 +15,7 @@ permissions:
 
 env:
   AWS_REGION: ap-southeast-3
+  AWS_ACCOUNT_ID: "267544548136"
   ECS_CLUSTER: aws-ms-cluster
   ECS_SERVICE: aws-ms-user-service
   ECR_REPOSITORY: user-service
@@ -19,12 +24,10 @@ env:
 jobs:
   deploy:
     name: Deploy to ECS
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -49,9 +52,12 @@ jobs:
             --query taskDefinition \
             --output json > task-definition.json
 
-      - name: Update image in task definition
+      - name: Update image
         run: |
-          IMAGE="${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          IMAGE="${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.event.workflow_run.head_sha }}"
+
+          echo "Deploying image:"
+          echo "$IMAGE"
 
           jq \
             --arg IMAGE "$IMAGE" \

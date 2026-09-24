@@ -83,7 +83,7 @@ jobs:
               --password-stdin 267544548136.dkr.ecr.ap-southeast-3.amazonaws.com
 
       - name: Build Docker image
-        run: docker build -t my-repo:${{ github.sha }} .
+        run: docker build -t user-service:${{ github.sha }} .
 
       - name: Tag Docker image
         run: |
