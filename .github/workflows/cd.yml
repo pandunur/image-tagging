@@ -17,7 +17,7 @@ env:
   AWS_REGION: ap-southeast-3
   AWS_ACCOUNT_ID: "267544548136"
   ECS_CLUSTER: aws-ms-dev-cluster
-  ECS_SERVICE: aws-ms-user-service
+  ECS_SERVICE: aws-ms-dev-user-service
   ECR_REPOSITORY: aws-ms-dev-user-service
   CONTAINER_NAME: user-service
 
@@ -47,10 +47,13 @@ jobs:
 
       - name: Download task definition
         run: |
+          echo "Task definition ARN:"
+          cat task-definition-arn.txt
+
           aws ecs describe-task-definition \
-            --task-definition $(cat task-definition-arn.txt) \
-            --query taskDefinition \
-            --output json > task-definition.json
+            --task-definition "$(cat task-definition-arn.txt)" \
+            --query 'taskDefinition.{family:family,revision:revision,arn:taskDefinitionArn,status:status}' \
+            --output table
 
       - name: Update image
         run: |
