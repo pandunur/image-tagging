@@ -52,8 +52,11 @@ jobs:
 
           aws ecs describe-task-definition \
             --task-definition "$(cat task-definition-arn.txt)" \
-            --query 'taskDefinition.{family:family,revision:revision,arn:taskDefinitionArn,status:status}' \
-            --output table
+            --query 'taskDefinition' \
+            --output json > task-definition.json
+
+          echo "Task definition downloaded:"
+          ls -lh task-definition.json
 
       - name: Update image
         run: |
